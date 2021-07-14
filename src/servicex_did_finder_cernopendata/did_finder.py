@@ -38,7 +38,7 @@ async def find_files(did_name: str, info: Dict[str, Any]) -> AsyncGenerator[Dict
             assert isinstance(line, str)
             uri = line.strip()
             if not uri.startswith('root://'):
-                raise Exception(f'CMSOpenData: Opendata record returned a non-xrootd url: {uri}')
+                raise Exception(f'CMSOpenData: Opendata record returned a non-xrootd url: "{uri}"')
             yield {
                 'file_path': uri,
                 'adler32': 0,  # No clue
