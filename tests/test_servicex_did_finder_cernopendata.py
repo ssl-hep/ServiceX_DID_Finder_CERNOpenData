@@ -17,6 +17,17 @@ def command_for_files_back(url: str) -> Iterator[Path]:
         yield path
 
 
+@contextmanager
+def command_exit(exit_code: int) -> Iterator[Path]:
+    with TemporaryDirectory() as tdir:
+        path = Path(tdir) / 'runner.py'
+        with path.open('w') as tfp:
+            tfp.write(f'exit ("{exit_code}")')
+            tfp.write('\n')
+
+        yield path
+
+
 @pytest.mark.asyncio
 async def test_working_call():
     with command_for_files_back('root://root.idiot.it/dude') as script_name:
@@ -30,6 +41,19 @@ async def test_working_call():
         assert isinstance(files[0], dict)
         assert files[0]['file_path'] == 'root://root.idiot.it/dude'
 
+
+@pytest.mark.asyncio
+async def test_exit_code_no_output():
+    with command_exit(10) as script_name:
+        iter = find_files('1507',
+                          {'request-id': '112233'},
+                          command=f'python {script_name}'
+                          )
+        with pytest.raises(Exception) as e:
+            [f async for f in iter]
+
+        assert "10" in str(e)
+        
 
 @pytest.mark.asyncio
 async def test_non_root_return():
