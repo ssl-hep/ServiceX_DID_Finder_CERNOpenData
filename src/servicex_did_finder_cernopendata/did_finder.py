@@ -48,12 +48,13 @@ async def find_files(did_name: str,
             uri = line.strip()
             if not uri.startswith('root://'):
                 non_root_uri = True
-            yield {
-                'file_path': uri,
-                'adler32': 0,  # No clue
-                'file_size': 0,  # Size in bytes if known
-                'file_events': 0,  # Number of events if known
-            }
+            else:
+                yield {
+                    'file_path': uri,
+                    'adler32': 0,  # No clue
+                    'file_size': 0,  # Size in bytes if known
+                    'file_events': 0,  # Number of events if known
+                }
 
         # Next, sort out the errors (if there are any)
         p.wait()
